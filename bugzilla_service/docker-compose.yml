@@ -1,0 +1,27 @@
+version: "3.6"
+
+volumes:
+  bzsdata: {}
+  
+services:
+  bugzilladb:
+    build: "./db"
+    restart: "always"
+    container_name: "bzsdb"
+    environment:
+      POSTGRES_DB: "bzsdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+    - "5061:5432"
+    volumes:
+      - bzsdata:/var/lib/postgresql/data
+
+  bzservice:
+    build: "./bzservice_flask"
+    restart: "always"
+    container_name: "bzService"
+    ports:
+    - "9090:9090"
+    depends_on:
+      - bugzilladb

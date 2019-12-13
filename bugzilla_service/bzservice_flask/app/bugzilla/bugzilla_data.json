@@ -1,0 +1,11 @@
+{
+    "bugzilla_url": "http://172.16.0.8:8500",
+    "username": "bzservice@mail.com",
+    "password": "bzservice1234",
+    "admin_key": "dC1It4qiWYsk79RZ2nC99kOz1BrosjyiyTYbRLHZ",
+    "login": "/rest/login",
+    "logout": "/rest/logout",
+    "users": "/rest/user",
+    "bugs": "/rest/bug",
+    "products": "/rest/product"
+}
