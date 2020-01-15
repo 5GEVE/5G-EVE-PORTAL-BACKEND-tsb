@@ -16,12 +16,14 @@ bp = Blueprint('auth', __name__, url_prefix='/')
 def registration():
     if not request.is_json:
         return jsonify({"details": "No json provided"}), 400
-
-    data = request.get_json()
-
+    
+    try:
+        data = request.get_json()
+    except Exception as e:
+        return jsonify({"details": "Json not correctly formatted"}), 400
+    
     schema = BugzillaUserSchema()
     errors = schema.validate(data)
-
     if errors:
         return jsonify({"details": errors}), 400
 
@@ -31,7 +33,6 @@ def registration():
 
     # Create user in bugzilla
     status, msg = bz_client.create_user(data)
-
     if status in [200, 201]:
         # Hash password
         data['password'] = bcrypt.generate_password_hash(data['password'].encode('utf-8'))
@@ -104,8 +105,8 @@ def logout():
             db.session.commit()
 
             return jsonify({"details": "User session corretly closed"}), 200
-        else:
-            return jsonify({"details": msg}), status
+
+        return jsonify({"details": msg}), status
     else:
         print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
         return jsonify({"details": "Internal server error"}), 500
