@@ -19,7 +19,7 @@ class BugzillaUserSchema(ma.ModelSchema):
     email = fields.Email(required=True)
     full_name = fields.Str(required=True)
     password = fields.Str(required=True)
-    apikey = fields.Str(required=True)
+    apikey = fields.Str(required=False)
 
     class Meta:
         model = BugzillaUser
