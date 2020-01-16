@@ -1,5 +1,5 @@
 {
-    "bugzilla_url": "http://172.16.0.8:8500",
+    "bugzilla_url": "http://10.50.80.3:8500",
     "username": "bzservice@mail.com",
     "password": "bzservice1234",
     "admin_key": "dC1It4qiWYsk79RZ2nC99kOz1BrosjyiyTYbRLHZ",

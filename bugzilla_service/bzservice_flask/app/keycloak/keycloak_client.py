@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 from flask import ( jsonify )
 
 #TODO: configuration file
-KC_URL = "http://172.16.0.8:8080"
+KC_URL = "http://10.50.80.3:8080"
 
 class Keycloak:
 

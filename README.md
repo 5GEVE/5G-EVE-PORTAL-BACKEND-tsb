@@ -15,9 +15,10 @@ cd bugzilla_docker
 docker-compose up
 ```
 Now, It's time to configure bugzilla in order for bugzilla service to be able to manage everything. In order to do so, follow the steps below:
-* Configure smtp server: go to ```administration > Email``` and change the ```email_delivery_method``` parameter (Test to disable smtp).
+* Configure smtp server: go to ```administration > Parameters > Email``` and change the ```email_delivery_method``` parameter (Test to disable smtp).
 * bugzilla_service user account creation: Create an admin user in order for bugzilla_service to manage users/bugs CRUD operations (```administration > Users > add a new user```)
-* Create an API Key for bugzilla_user: In order to authenticate our service against bugzilla, go to ```Preferences > API Keys``` and generate a new API Key.
+* Mark all permissions for the newly created user
+* Create an API Key for bugzilla_user: In order to authenticate our service against bugzilla, sign in with the new user account and go to ```Preferences > API Keys``` to generate a new API Key.
 
 ## Dockerized Flask bugzilla_service
 Right before running the service, go to ```bugzilla_service/bugzilla/``` and modify ```bugzilla_data.json``` with the user acount and API Key generated in the previous steps.
@@ -30,7 +31,7 @@ Now, at ```Clients > "new_client" > Credentials``` we have the secret that will 
 * ```Users > Add user```
 * (Optional) ```Users > new_user > Role Mappings```: add roles to the user that will be used by the service.
 
-Let's now add all the information at ```bugzilla_service/bz_service_flask/keycloak.json``` (client_id, client_secret, admin_username, admin_password).
+Let's now add all the information at ```bugzilla_service/bz_service_flask/keycloak.json``` (client_id, client_secret, admin_username, admin_password). After that, it is required to configure audience claims inside tokens [guide](https://stackoverflow.com/questions/53550321/keycloak-gatekeeper-aud-claim-and-client-id-do-not-match).
 
 Finally, run:
 
