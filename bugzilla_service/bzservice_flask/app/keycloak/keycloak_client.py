@@ -2,6 +2,9 @@ import requests, os, json
 from requests.auth import HTTPBasicAuth
 from flask import ( jsonify )
 
+#TODO: configuration file
+KC_URL = "http://172.16.0.8:8080"
+
 class Keycloak:
 
     def __init__(self):
@@ -19,7 +22,8 @@ class Keycloak:
             'username': self.client_config['web']['admin_username'],
             'password': self.client_config['web']['admin_password']
         }
-        response = requests.post(self.client_config['web']['admin_token_uri'], data=data)
+        url = KC_URL + self.client_config['web']['admin_token_uri']
+        response = requests.post(url, data=data)
 
         if response.status_code != requests.codes.ok:
             print("\tSERVER > [ERROR] Admin token not correctly requested - {}".format(response.json()))
@@ -45,7 +49,7 @@ class Keycloak:
             'password': self.client_config['web']['admin_password'],
             'token': token
         }
-        url = self.client_config['web']['token_introspection_uri']
+        url = KC_URL + self.client_config['web']['token_introspection_uri']
         response = requests.post(url, data=data)
 
         if response.status_code != requests.codes.ok:
@@ -63,7 +67,7 @@ class Keycloak:
             'password': self.client_config['web']['admin_password'],
             'token': token
         }
-        url = self.client_config['web']['token_introspection_uri']
+        url = KC_URL + self.client_config['web']['token_introspection_uri']
         response = requests.post(url, data=data)
 
         if response.status_code != requests.codes.ok:
@@ -82,8 +86,7 @@ class Keycloak:
             'token': token
         }
 
-        url = self.client_config['web']['token_introspection_uri']
-        
+        url = KC_URL + self.client_config['web']['token_introspection_uri']
         response = requests.post(url, data=data)
         if response.status_code != requests.codes.ok:
             return response.status_code, response.json()
@@ -103,8 +106,7 @@ class Keycloak:
             'token': token
         }
 
-        url = self.client_config['web']['token_introspection_uri']
-        
+        url = KC_URL + self.client_config['web']['token_introspection_uri']
         response = requests.post(url, data=data)
 
         if response.status_code != requests.codes.ok:
@@ -115,8 +117,8 @@ class Keycloak:
 
     def get_users(self):
         headers = {'Authorization': 'Bearer {}'.format(self.admin_access_token), 'Content-Type': 'application/json'}
-
-        response = requests.get(self.client_config['web']['admin_users_uri'], headers=headers)
+        url = KC_URL + self.client_config['web']['admin_users_uri']
+        response = requests.get(url, headers=headers)
 
         if response.status_code != requests.codes.ok:
             return response.status_code, response.json
@@ -131,7 +133,7 @@ class Keycloak:
             self.refresh_admin_token()
             headers = {'Authorization': 'Bearer {}'.format(self.admin_access_token), 'Content-Type': 'application/json'}
 
-        url = self.client_config['web']['admin_users_uri'] + '/' + user_id + '/groups'
+        url = KC_URL + self.client_config['web']['admin_users_uri'] + '/' + user_id + '/groups'
         response = requests.get(url, headers=headers)
 
         bytes_to_str = str(response.content)[2:-1]
