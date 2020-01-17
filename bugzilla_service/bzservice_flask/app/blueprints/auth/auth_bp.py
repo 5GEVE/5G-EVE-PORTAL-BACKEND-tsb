@@ -9,7 +9,7 @@ from app.keycloak.keycloak_client import Keycloak
 from app.bugzilla.bugzilla_client import BugzillaClient
 
 # BLUEPRINT CREATION
-bp = Blueprint('auth', __name__, url_prefix='/')
+bp = Blueprint('auth', __name__, url_prefix='')
 
 # ROUTES DEFINITION
 @bp.route('/register', methods=['POST'])

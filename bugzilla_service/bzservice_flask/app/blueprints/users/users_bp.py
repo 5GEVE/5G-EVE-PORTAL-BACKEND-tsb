@@ -4,7 +4,7 @@ import json
 from app.models.user import *
 
 # BLUEPRINT CREATION
-bp = Blueprint('users', __name__, url_prefix='/users')
+bp = Blueprint('users', __name__, url_prefix='/portal/tsb/adminusers')
 
 #### ROUTES DEFINITION ####
 @bp.route('', methods=['GET'])

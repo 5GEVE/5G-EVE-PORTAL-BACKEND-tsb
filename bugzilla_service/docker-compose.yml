@@ -16,7 +16,6 @@ services:
     - "5061:5432"
     volumes:
       - bzsdata:/var/lib/postgresql/data
-
   bzservice:
     build: "./bzservice_flask"
     restart: "always"

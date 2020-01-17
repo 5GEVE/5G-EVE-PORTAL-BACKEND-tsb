@@ -40,6 +40,7 @@ def create_app(test_config=None):
 
         # DB connection configuration
         app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@bugzilladb:5432/bzsdb'
+        #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@10.50.80.3:5061/bzsdb'
         db.init_app(app)
         db.create_all()
 

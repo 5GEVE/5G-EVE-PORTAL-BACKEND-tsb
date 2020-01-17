@@ -5,7 +5,7 @@ from datetime import datetime
 from app.models.user import *
 
 # BLUEPRINT CREATION
-bp = Blueprint('bugs', __name__, url_prefix='/bugs')
+bp = Blueprint('bugs', __name__, url_prefix='/portal/tsb/tickets')
 
 #### ROUTES DEFINITION ####
 @bp.route('', methods=['GET'])

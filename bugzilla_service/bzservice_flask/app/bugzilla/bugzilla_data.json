@@ -2,7 +2,7 @@
     "bugzilla_url": "http://10.50.80.3:8500",
     "username": "bzservice@mail.com",
     "password": "bzservice1234",
-    "admin_key": "dC1It4qiWYsk79RZ2nC99kOz1BrosjyiyTYbRLHZ",
+    "admin_key": "hU8JAaOVizKPL7ZPm7nPxOjRracAaow05T0Mf6q4",
     "login": "/rest/login",
     "logout": "/rest/logout",
     "users": "/rest/user",
