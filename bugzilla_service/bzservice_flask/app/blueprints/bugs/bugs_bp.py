@@ -88,6 +88,28 @@ def create_bug():
             print("SERVER > [ERROR] user {} not found in the DB but correctly logged in at Keycloak")
             return jsonify({'details': 'Internal server error'}), 500
 
+#TODO: filter incomming requests. Only requests from ELM are allowed
+@bp.route('/trusted', methods=['POST'])
+def create_bug_trusted():
+    '''
+        Allow creation of tickets from the ELM on behalf of an authenticated user
+    '''
+    if not request.is_json:
+        return jsonify({"details": "No json provided"}), 400
+
+    data = request.get_json()
+
+    user = BugzillaUser.query.filter_by(email=data['reporter']).first()
+    if user:
+        bugzilla_token = user.apikey
+        status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data)
+
+        return jsonify({'details': msg}), status
+
+    else:
+        print("SERVER > [ERROR] reporter {} not found", msg['reporter'])
+        return jsonify({'details': 'Internal server error'}), 500
+
 @bp.route('/<bug_id>', methods=['POST'])
 @oidc.accept_token(require_token=True)
 def update_bug(bug_id):
