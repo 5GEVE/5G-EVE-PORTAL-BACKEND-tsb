@@ -189,8 +189,8 @@ def create_bug_trusted():
         return jsonify({'details': msg}), status
 
     else:
-        print("SERVER > [ERROR] reporter {} not found", msg['reporter'])
-        return jsonify({'details': 'Internal server error'}), 500
+        print("SERVER > [ERROR] reporter {} not found", data['reporter'])
+        return jsonify({'details': 'User requesting comment creation not found'}), 404
 
 #TODO: filter incomming requests. Only requests from ELM are allowed
 @bp.route('/<bug_id>/comments/trusted', methods=['POST'])
@@ -208,4 +208,4 @@ def create_bug_comment_trusted(bug_id):
 
     else:
         print("SERVER > [ERROR] reporter {} not found", data['reporter'])
-        return jsonify({'details': 'Internal server error'}), 500
+        return jsonify({'details': 'User requesting comment creation not found'}), 404

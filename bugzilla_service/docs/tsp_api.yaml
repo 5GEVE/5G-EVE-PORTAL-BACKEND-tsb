@@ -49,7 +49,7 @@ paths:
       security:
         - api_key: [] 
         
-  /users:
+  /adminusers:
     get:
       tags:
       - "Site admin users"
@@ -91,7 +91,6 @@ paths:
           description: "Unauthorized"
         200:
           description: "Id of the newly created ticket"
-        
       security:
         - api_key: []
     get:
@@ -145,7 +144,7 @@ paths:
       - "application/json"
       parameters:
         - in: path
-          name: ticket_id   # Note the name is the same as in the path
+          name: ticket_id
           required: true
           schema:
             type: integer
@@ -168,7 +167,7 @@ paths:
       - "application/json"
       parameters:
         - in: path
-          name: ticket_id   # Note the name is the same as in the path
+          name: ticket_id
           required: true
           schema:
             type: integer
@@ -190,6 +189,12 @@ paths:
       produces:
       - "application/json" 
       parameters:
+      - in: path
+        name: ticket_id
+        required: true
+        type: integer
+        minimum: 1
+        description: The Ticket ID      
       - in: "body"
         name: "body"
         description: "New comment to be created"
@@ -216,6 +221,12 @@ paths:
       produces:
       - "application/json" 
       parameters:
+      - in: path
+        name: ticket_id
+        required: true
+        type: integer
+        minimum: 1
+        description: The Ticket ID      
       - in: "body"
         name: "body"
         description: "New comment to be created"
