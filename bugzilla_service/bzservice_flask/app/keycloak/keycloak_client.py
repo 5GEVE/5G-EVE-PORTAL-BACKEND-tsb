@@ -2,9 +2,6 @@ import requests, os, json
 from requests.auth import HTTPBasicAuth
 from flask import ( jsonify )
 
-#TODO: configuration file
-KC_URL = "http://10.50.80.3:8080"
-
 class Keycloak:
 
     def __init__(self):
