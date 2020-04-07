@@ -54,7 +54,7 @@ def login():
     data = request.get_json()
     if 'email' not in data.keys() or 'password' not in data.keys():
         return jsonify({"details": "Email or password not provided"}), 400
-    
+        
     status, msg = bz_client.login(data)
     
     if status == requests.codes.ok:
@@ -86,7 +86,7 @@ def login():
 
         print("[AUTH_BP][ERROR] > User correctly logged in at bugzilla but not found at local database")
         return jsonify({"details": "Internal server error"}), 500
-
+    
     return jsonify({"details": msg}), status
 
 #TODO: oidc

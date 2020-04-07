@@ -24,8 +24,11 @@ def get_bugs():
                 status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=True)
             else:
                 status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=False)
-            sorted_data = sorted(msg['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=False)
-            return jsonify({'details': sorted_data}), status
+            if status != requests.codes.ok:
+                return jsonify({'details': msg}), status
+            else:
+                sorted_data = sorted(msg['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=False)
+                return jsonify({'details': sorted_data}), status
 
         else:
             print("SERVER > [ERROR] user {} not found in the DB but correctly logged in at Keycloak".format(msg['email']))

@@ -3,7 +3,6 @@ import os, json
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 def configure(mode, app):
-    #app.config['SERVER_NAME'] = "0.0.0.0:9090"
 
     if mode == "DEV":
 
@@ -26,4 +25,48 @@ def configure(mode, app):
         app.config['OIDC_CLOCK_SKEW'] = 560 #iat must be > time.time() - OIDC_CLOCK_SKEW
         app.config['OIDC_RESOURCE_SERVER_ONLY'] = True
 
-             
+    # Create keycloak configuration file
+    with open(os.path.abspath(os.path.dirname(__file__))+'/../app/flask_config.json', 'r') as config_file:
+        config = config_file.read()
+
+    conf = json.loads(config)
+
+    kc_config = {}
+    kc_config['web'] = {}
+    # Keycloak trusted client configuration
+    kc_config['web']['client_id'] = conf['kc_client_id']
+    kc_config['web']['client_secret'] = conf['kc_client_secret']
+    # oidc package and admin URLs 
+    kc_config['web']['issuer'] = "{}{}".format(conf['kc_url'], conf['issuer'])
+    kc_config['web']['redirect_uris'] = []
+    kc_config['web']['redirect_uris'].append("{}{}".format(conf['kc_url'], conf['redirect_uris'][0]))
+    kc_config['web']['auth_uri'] = "{}{}".format(conf['kc_url'], conf['auth_uri'])
+    kc_config['web']['userinfo_uri'] = "{}{}".format(conf['kc_url'], conf['userinfo_uri'])
+    kc_config['web']['token_uri'] = "{}{}".format(conf['kc_url'], conf['token_uri'])
+    kc_config['web']['token_introspection_uri'] = "{}{}".format(conf['kc_url'], conf['token_introspection_uri'])
+    kc_config['web']['end_session'] = "{}{}".format(conf['kc_url'], conf['end_session'])
+    kc_config['web']['admin_username'] = "{}".format(conf['kc_admin_username'])
+    kc_config['web']['admin_password'] = "{}".format(conf['kc_admin_password'])
+    kc_config['web']['admin_token_uri'] = "{}{}".format(conf['kc_url'], conf['admin_token_uri'])
+    kc_config['web']['admin_token_introspect_uri'] = "{}{}".format(conf['kc_url'], conf['admin_token_introspect_uri'])
+    kc_config['web']['admin_users_uri'] = "{}{}".format(conf['kc_url'], conf['admin_users_uri'])
+    kc_config['web']['admin_groups_uri'] = "{}{}".format(conf['kc_url'], conf['admin_groups_uri'])
+    kc_config['web']['admin_roles_uri'] = "{}{}".format(conf['kc_url'], conf['admin_roles_uri'])
+
+    with open(os.path.abspath(os.path.dirname(__file__))+'/../app/keycloak/keycloak.json',"w+") as f:
+        json.dump(kc_config, f)
+
+    bz_config = {}
+    bz_config['bugzilla_url'] = conf['bz_url']
+    bz_config['username'] = conf['bz_username']
+    bz_config['password'] = conf['bz_password']
+    bz_config['admin_key'] = conf['bz_admin_key']
+    bz_config['login_uri'] = "{}{}".format(conf['bz_url'], conf['bz_login_uri'])
+    bz_config['logout_uri'] = "{}{}".format(conf['bz_url'], conf['bz_logout_uri'])
+    bz_config['users_uri'] = "{}{}".format(conf['bz_url'], conf['bz_users_uri'])
+    bz_config['bugs_uri'] = "{}{}".format(conf['bz_url'], conf['bz_bugs_uri'])
+    bz_config['products_uri'] = "{}{}".format(conf['bz_url'], conf['bz_products_uri'])
+
+    with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
+        json.dump(bz_config, f)
+ 
