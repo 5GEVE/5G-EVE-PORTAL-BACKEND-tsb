@@ -61,6 +61,7 @@ def configure(mode, app):
     bz_config['username'] = conf['bz_username']
     bz_config['password'] = conf['bz_password']
     bz_config['admin_key'] = conf['bz_admin_key']
+
     bz_config['login_uri'] = "{}{}".format(conf['bz_url'], conf['bz_login_uri'])
     bz_config['logout_uri'] = "{}{}".format(conf['bz_url'], conf['bz_logout_uri'])
     bz_config['users_uri'] = "{}{}".format(conf['bz_url'], conf['bz_users_uri'])
@@ -69,4 +70,12 @@ def configure(mode, app):
 
     with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
         json.dump(bz_config, f)
- 
+
+    bz_config['login'] = "{}{}".format(conf['bz_url'], conf['bz_login_uri'])
+    bz_config['logout'] = "{}{}".format(conf['bz_url'], conf['bz_logout_uri'])
+    bz_config['users'] = "{}{}".format(conf['bz_url'], conf['bz_users_uri'])
+    bz_config['bugs'] = "{}{}".format(conf['bz_url'], conf['bz_bugs_uri'])
+    bz_config['products'] = "{}{}".format(conf['bz_url'], conf['bz_products_uri'])
+
+    with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
+        json.dump(bz_config, f)
