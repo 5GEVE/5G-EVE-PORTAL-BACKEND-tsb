@@ -146,10 +146,8 @@ paths:
         - in: path
           name: ticket_id
           required: true
-          schema:
-            type: integer
-            minimum: 1
           description: The Ticket ID
+          type: integer
       responses:
         401:
           description: "Unauthorized"
@@ -169,10 +167,8 @@ paths:
         - in: path
           name: ticket_id
           required: true
-          schema:
-            type: integer
-            minimum: 1
           description: The Ticket ID
+          type: integer
       responses:
         401:
           description: "Unauthorized"
