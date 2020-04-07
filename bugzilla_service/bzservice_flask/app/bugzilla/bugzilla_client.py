@@ -86,8 +86,8 @@ class BugzillaClient:
     def get_bug(self, requester_email, requester_token, bug_id, is_admin):
         return self.bugs.get_bugs_by_id(requester_email, requester_token, bug_id, is_admin)
 
-    def get_bugs(self, requester_email, requester_token, is_admin):
-        return self.bugs.get_bugs_by_creator(requester_email, requester_token, is_admin)
+    def get_bugs(self, requester_email, requester_token, is_admin, page):
+        return self.bugs.get_bugs_by_creator(requester_email, requester_token, is_admin, page)
 
     def create_bug(self, reporter_token, bug_data):
         return self.bugs.create_bug(reporter_token, bug_data)

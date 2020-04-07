@@ -1,4 +1,6 @@
 import requests, json
+from datetime import datetime
+import numpy as np
 
 class BugzillaBug:
 
@@ -43,13 +45,37 @@ class BugzillaBug:
                 - HTTP code
                 - message: it will include a bug list or details about the error
     """
-    def get_bugs_by_creator(self, requester, requester_token, is_admin):
+    def get_bugs_by_creator(self, requester, requester_token, is_admin, page):
+        if page == None:
+            page = 1
+
         if is_admin:
-            url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key']
+            url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key'] + "&status=CONFIRMED"
         else:    
-            url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token
+            url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token + "&status=CONFIRMED"
 
         response = requests.get(url)
+
+        if response.status_code == 200:
+            sorted_bugs = sorted(response.json()['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=True)
+
+            if int(page) > np.ceil(len(sorted_bugs)/10):
+                return 404, "Tickets page not found"
+
+            bugs = []
+            start = (page*10)
+            end = (page*10) + 10
+            if end > len(sorted_bugs):
+                end = len(sorted_bugs)
+
+            for i in range(start, end):
+                bugs.append(sorted_bugs[i])
+            data = {}
+            data['tickets'] = bugs
+            data['totalTickets'] = len(sorted_bugs)
+            data['numTickets'] = len(bugs)
+            return response.status_code, data
+
         return response.status_code, response.json()
 
     """ Method to create a bug
