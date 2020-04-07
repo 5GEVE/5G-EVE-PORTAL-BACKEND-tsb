@@ -1,4 +1,5 @@
 import requests, os, json, functools
+from flask import jsonify
 from .bugzilla_products import BugzillaProducts
 from .bugzilla_components import BugzillaComponent
 from .bugzilla_bugs import BugzillaBug
@@ -25,7 +26,7 @@ class BugzillaClient:
     def create_user(self, user_data):
         url = self.bugzilla_data['users_uri'] + "?api_key=" + self.bugzilla_data['admin_key']
         response = requests.post(url, data=user_data)
-        
+
         return response.status_code, response.json()
 
     """ Login method
@@ -37,6 +38,9 @@ class BugzillaClient:
     def login(self, user_data):
         url = self.bugzilla_data['login_uri'] + "?login=" + user_data['email'] + "&password=" + user_data['password']
         response = requests.get(url)
+        
+        if response.status_code != 200:
+            return response.status_code, "User not found"
         
         return response.status_code, response.json()
     

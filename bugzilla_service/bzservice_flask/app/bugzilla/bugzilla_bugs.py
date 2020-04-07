@@ -49,8 +49,6 @@ class BugzillaBug:
         else:    
             url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token
 
-        print(url)
-
         response = requests.get(url)
         return response.status_code, response.json()
 
