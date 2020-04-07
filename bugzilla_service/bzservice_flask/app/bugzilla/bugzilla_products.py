@@ -8,7 +8,7 @@ class BugzillaProducts:
     """ Retrieve all product identifiers that a user can enter a bug against
     """
     def get_products(self):
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['products'] + '_enterable'
+        url = self.bugzilla_data['products_uri'] + '_enterable'
         response = requests.get(url)
 
         if response.status_code == requests.codes.ok:
@@ -16,7 +16,7 @@ class BugzillaProducts:
             products = []
             for product_id in data['ids']:
 
-                response = requests.get(self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['products'] + '/' + str(product_id))
+                response = requests.get(self.bugzilla_data['products_uri'] + '/' + str(product_id))
                 if response.status_code == requests.codes.ok:
                     product_data = response.json()
                     product = {'id': product_id, 'name': product_data['products'][0]['name'], 'description': product_data['products'][0]['description']}

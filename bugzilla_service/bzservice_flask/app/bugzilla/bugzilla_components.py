@@ -11,7 +11,7 @@ class BugzillaComponent:
     """
     def get_components(self, product_id):
         # Get product who stores the components
-        response = requests.get(self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['products'] + '/' + str(product_id))
+        response = requests.get(self.bugzilla_data['products_uri'] + '/' + str(product_id))
 
         if response.status_code == requests.codes.ok:
             data = response.json()
@@ -32,7 +32,7 @@ class BugzillaComponent:
     """
     def get_components_all_details(self, product_id):
         # Get product who stores the components
-        response = requests.get(self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['products'] + '/' + str(product_id))
+        response = requests.get(self.bugzilla_data['products_uri'] + '/' + str(product_id))
 
         if response.status_code == requests.codes.ok:
             data = response.json()

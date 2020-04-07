@@ -17,9 +17,9 @@ class BugzillaBug:
     """
     def get_bugs_by_id(self, requester, requester_token, bug_id, is_admin):
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/' + bug_id + "?api_key=" + self.bugzilla_data['admin_key']
+            url = self.bugzilla_data['bugs_uri'] + '/' + bug_id + "?api_key=" + self.bugzilla_data['admin_key']
         else:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/' + bug_id + "?token=" + requester_token
+            url = self.bugzilla_data['bugs_uri'] + '/' + bug_id + "?token=" + requester_token
         response = requests.get(url)
 
         if response.status_code == requests.codes.ok:
@@ -45,9 +45,9 @@ class BugzillaBug:
     """
     def get_bugs_by_creator(self, requester, requester_token, is_admin):
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + "?api_key=" + self.bugzilla_data['admin_key']
+            url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key']
         else:    
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + "?reporter=" + requester + "&token=" + requester_token
+            url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token
 
         response = requests.get(url)
         return response.status_code, response.json()
@@ -64,7 +64,7 @@ class BugzillaBug:
                     - assigned_to: by default it will be the component owner
     """
     def create_bug(self, reporter_token, bug_data):   
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + "?token=" + reporter_token
+        url = self.bugzilla_data['bugs_uri'] + "?token=" + reporter_token
         #TODO: hardcoded values not defaulted at bugzilla
         bug_data['version'] = "unspecified"
         bug_data['op_sys'] = "other"
@@ -91,12 +91,12 @@ class BugzillaBug:
     """
     def update_bug(self, reporter, reporter_token, bug_data, bug_id, is_admin):
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + "/" + bug_id + "?token=" + reporter_token
+            url = self.bugzilla_data['bugs_uri'] + "/" + bug_id + "?token=" + reporter_token
             response = requests.put(url, data=bug_data)
         else:
             code, msg = self.get_bugs_by_id(requester=reporter, requester_token=reporter_token, bug_id=bug_id, is_admin=False)
             if code == requests.codes.ok:
-                url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + "/" + bug_id + "?token=" + reporter_token
+                url = self.bugzilla_data['bugs_uri'] + "/" + bug_id + "?token=" + reporter_token
                 response = requests.put(url, data=bug_data)
             else:
                 return 401, json.loads(json.dumps({"error": "User not allowed to update bug #{}".format(bug_id)}))

@@ -15,9 +15,9 @@ class BugzillaComment:
     """
     def get_comments(self, requester_token, bug_id, is_admin):
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/' + str(bug_id) + '/comment' + "?api_key=" + self.bugzilla_data['admin_key']
+            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?api_key=" + self.bugzilla_data['admin_key']
         else:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/' + str(bug_id) + '/comment' + "?token=" + requester_token
+            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?token=" + requester_token
         response = requests.get(url)
 
         if response.status_code == requests.codes.ok:
@@ -38,7 +38,7 @@ class BugzillaComment:
     """
     def create_comment(self, user_token, bug_id, comment_data):
 
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/' + str(bug_id) + '/comment?token=' + user_token
+        url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment?token=' + user_token
         
         response = requests.post(url, data=comment_data)
 
@@ -56,9 +56,9 @@ class BugzillaComment:
     def get_comment(self, requester_email, requester_token, comment_id, is_admin):
 
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/comment/' + str(comment_id) + "?api_key=" + self.bugzilla_data['admin_key']
+            url = self.bugzilla_data['bugs_uri'] + '/comment/' + str(comment_id) + "?api_key=" + self.bugzilla_data['admin_key']
         else:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/comment/' + str(comment_id) + "?token=" + requester_token
+            url = self.bugzilla_data['bugs_uri'] + '/comment/' + str(comment_id) + "?token=" + requester_token
         response = requests.get(url)
 
         if response.status_code == requests.codes.ok:
@@ -84,12 +84,12 @@ class BugzillaComment:
     """
     def update_bug(self, user_email, user_token, comment_data, comment_id, is_admin):
         if is_admin:
-            url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/comment/' + str(comment_id) + '/tags' + '?token=' + reporter_token
+            url = self.bugzilla_data['bugs_uri'] + '/comment/' + str(comment_id) + '/tags' + '?token=' + reporter_token
             response = requests.put(url, data=comment_data)
         else:
             code, msg = self.get_comment(user_email, user_token, comment_id, is_admin)
             if code == requests.codes.ok:
-                url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['bugs'] + '/comment/' + str(comment_id) + '/tags' + '?token=' + reporter_token
+                url = self.bugzilla_data['bugs_uri'] + '/comment/' + str(comment_id) + '/tags' + '?token=' + reporter_token
                 response = requests.put(url, data=comment_data)
             else:
                 return 401, json.loads(json.dumps({"error": "User not allowed to update comment #{} flags".format(comment_id)}))

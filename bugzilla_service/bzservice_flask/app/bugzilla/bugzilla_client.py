@@ -1,4 +1,5 @@
 import requests, os, json, functools
+from flask import jsonify
 from .bugzilla_products import BugzillaProducts
 from .bugzilla_components import BugzillaComponent
 from .bugzilla_bugs import BugzillaBug
@@ -23,8 +24,9 @@ class BugzillaClient:
             @return: HTTP code + details message
     """
     def create_user(self, user_data):
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['users'] + "?api_key=" + self.bugzilla_data['admin_key']
+        url = self.bugzilla_data['users_uri'] + "?api_key=" + self.bugzilla_data['admin_key']
         response = requests.post(url, data=user_data)
+
         return response.status_code, response.json()
 
     """ Login method
@@ -34,8 +36,12 @@ class BugzillaClient:
                 - Details message: if success, it will include an access token that belongs to the authenticated user
     """
     def login(self, user_data):
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['login'] + "?login=" + user_data['email'] + "&password=" + user_data['password']
+        url = self.bugzilla_data['login_uri'] + "?login=" + user_data['email'] + "&password=" + user_data['password']
         response = requests.get(url)
+        
+        if response.status_code != 200:
+            return response.status_code, "User not found"
+        
         return response.status_code, response.json()
     
     """ Logout method
@@ -43,13 +49,13 @@ class BugzillaClient:
             @return: HTTP code + details message
     """
     def logout(self, token):
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['logout'] + "?token='*'" + token
+        url = self.bugzilla_data['logout_uri'] + "?token='*'" + token
         response = requests.get(url)
         return response.status_code, response.json()        
 
 
     def get_admin_users(self):
-        url = self.bugzilla_data['bugzilla_url'] + self.bugzilla_data['users'] + "?api_key=" + self.bugzilla_data['admin_key'] + '&match=*@*'
+        url = self.bugzilla_data['users_uri'] + "?api_key=" + self.bugzilla_data['admin_key'] + '&match=*@*'
         response = requests.get(url)
 
         if response.status_code != requests.codes.ok:

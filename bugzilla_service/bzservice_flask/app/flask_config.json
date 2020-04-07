@@ -18,13 +18,13 @@
     "redirect_uris": [
         "oidc_callback"
     ],
-    "bz_url": "http://10.5.7.11:9090/",
+    "bz_url": "http://10.5.7.11:8500/",
     "bz_username": "bzservice@mail.com",
     "bz_password": "bzservice1234",
-    "bz_admin_key": "hU8JAaOVizKPL7ZPm7nPxOjRracAaow05T0Mf6q4",
+    "bz_admin_key": "hZ2dGQz78q5ZDkiQzuthnVqpCkkKT4JjKuysI2rS",
     "bz_login_uri": "rest/login",
-    "bz_logout_uri": "/rest/logout",
-    "bz_users_uri": "/rest/user",
-    "bz_bugs_uri": "/rest/bug",
-    "bz_products_uri": "/rest/product"
+    "bz_logout_uri": "rest/logout",
+    "bz_users_uri": "rest/user",
+    "bz_bugs_uri": "rest/bug",
+    "bz_products_uri": "rest/product"
 }
