@@ -8,9 +8,12 @@ from app.models.user import *
 bp = Blueprint('bugs', __name__, url_prefix='/portal/tsb/tickets')
 
 #### ROUTES DEFINITION ####
+# ?page=10
 @bp.route('', methods=['GET'])
 @oidc.accept_token(require_token=True)
 def get_bugs():
+    page = int(request.args.get('page'))
+    
     token = str(request.headers['authorization']).split(" ")[1]
     status_code, msg = kc_client.token_to_user(token)
 
@@ -21,14 +24,16 @@ def get_bugs():
             #TODO: admin roles
             msg['roles'] = "ADMIN"
             if "ADMIN" in msg['roles']:
-                status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=True)
+                status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=True, page=page)
             else:
-                status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=False)
-            if status != requests.codes.ok:
-                return jsonify({'details': msg}), status
-            else:
-                sorted_data = sorted(msg['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=False)
-                return jsonify({'details': sorted_data}), status
+                status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=False, page=page)
+            
+            return jsonify({'details': msg}), status
+            #if status != requests.codes.ok:
+            #    return jsonify({'details': msg}), status
+            #else:
+                #sorted_data = sorted(msg['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=False)
+                #return jsonify({'details': sorted_data}), status
 
         else:
             print("SERVER > [ERROR] user {} not found in the DB but correctly logged in at Keycloak".format(msg['email']))
