@@ -25,6 +25,8 @@ def configure(mode, app):
         app.config['OIDC_CLOCK_SKEW'] = 560 #iat must be > time.time() - OIDC_CLOCK_SKEW
         app.config['OIDC_RESOURCE_SERVER_ONLY'] = True
 
+def generate_config_files():
+
     # Create keycloak configuration file
     with open(os.path.abspath(os.path.dirname(__file__))+'/../app/flask_config.json', 'r') as config_file:
         config = config_file.read()
@@ -53,8 +55,11 @@ def configure(mode, app):
     kc_config['web']['admin_groups_uri'] = "{}{}".format(conf['kc_url'], conf['admin_groups_uri'])
     kc_config['web']['admin_roles_uri'] = "{}{}".format(conf['kc_url'], conf['admin_roles_uri'])
 
+    print(os.path.abspath(os.path.dirname(__file__))+'/../app/keycloak/keycloak.json')
+
     with open(os.path.abspath(os.path.dirname(__file__))+'/../app/keycloak/keycloak.json',"w+") as f:
         json.dump(kc_config, f)
+    f.close()
 
     bz_config = {}
     bz_config['bugzilla_url'] = conf['bz_url']
@@ -71,11 +76,11 @@ def configure(mode, app):
     with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
         json.dump(bz_config, f)
 
-    bz_config['login'] = "{}{}".format(conf['bz_url'], conf['bz_login_uri'])
-    bz_config['logout'] = "{}{}".format(conf['bz_url'], conf['bz_logout_uri'])
-    bz_config['users'] = "{}{}".format(conf['bz_url'], conf['bz_users_uri'])
-    bz_config['bugs'] = "{}{}".format(conf['bz_url'], conf['bz_bugs_uri'])
-    bz_config['products'] = "{}{}".format(conf['bz_url'], conf['bz_products_uri'])
+    #bz_config['login'] = "{}{}".format(conf['bz_url'], conf['bz_login_uri'])
+    #bz_config['logout'] = "{}{}".format(conf['bz_url'], conf['bz_logout_uri'])
+    #bz_config['users'] = "{}{}".format(conf['bz_url'], conf['bz_users_uri'])
+    #bz_config['bugs'] = "{}{}".format(conf['bz_url'], conf['bz_bugs_uri'])
+    #bz_config['products'] = "{}{}".format(conf['bz_url'], conf['bz_products_uri'])
 
-    with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
-        json.dump(bz_config, f)
+    #with open(os.path.abspath(os.path.dirname(__file__))+'/../app/bugzilla/bugzilla_data.json',"w+") as f:
+    #    json.dump(bz_config, f)
