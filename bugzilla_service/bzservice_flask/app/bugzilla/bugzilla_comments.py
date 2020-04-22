@@ -14,15 +14,20 @@ class BugzillaComment:
                 - list of comments or error
     """
     def get_comments(self, requester_token, bug_id, is_admin):
-        if is_admin:
-            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?api_key=" + self.bugzilla_data['admin_key']
-        else:
-            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?token=" + requester_token
+
+        url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?api_key=" + self.bugzilla_data['admin_key']
+        #url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment' + "?token=" + requester_token
         response = requests.get(url)
 
         if response.status_code == requests.codes.ok:
             data = response.json()
-            return response.status_code, json.loads(json.dumps(data['bugs'][bug_id]['comments']))
+            if is_admin:
+                return response.status_code, json.loads(json.dumps(data['bugs'][bug_id]['comments']))
+            else:
+                if self.is_user_allowed(bug_id):
+                    return response.status_code, json.loads(json.dumps(data['bugs'][bug_id]['comments']))
+                else:
+                    return requests.codes.unauthorized, json.loads('{"details": "Unauthorized user"}')
 
         return response.status_code, response.json()
 
@@ -36,13 +41,20 @@ class BugzillaComment:
             @return:
                 - identifier of the already created comment or error
     """
-    def create_comment(self, user_token, bug_id, comment_data):
+    def create_comment(self, user_token, bug_id, comment_data, is_admin):
+        if is_admin:
+            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment?token=' + user_token      
+            response = requests.post(url, data=comment_data)
+            return response.status_code, response.json()
 
-        url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment?token=' + user_token
-        
-        response = requests.post(url, data=comment_data)
-
-        return response.status_code, response.json()
+        elif self.is_user_allowed(bug_id):
+            url = self.bugzilla_data['bugs_uri'] + '/' + str(bug_id) + '/comment?token=' + user_token
+            response = requests.post(url, data=comment_data)
+            return response.status_code, response.json()
+        else:
+            return requests.codes.unauthorized, json.loads('{"details": "Unauthorized user"}')
+            
+            
 
     """ Retrieve details of a specific comment
             @params:
@@ -95,3 +107,17 @@ class BugzillaComment:
                 return 401, json.loads(json.dumps({"error": "User not allowed to update comment #{} flags".format(comment_id)}))
 
         return response.status_code, response.json()
+
+    def is_user_allowed(self, bug_id):
+        # If requester is not an admin, he/she only has access to 5G-EVE_PORTAL related tickets
+        bug_url = self.bugzilla_data['bugs_uri'] + '/' + bug_id + "?api_key=" + self.bugzilla_data['admin_key']
+        bug_response = requests.get(bug_url)
+
+        if bug_response.status_code != requests.codes.ok:
+            return False
+
+        bug_data = bug_response.json()
+        if len(bug_data['bugs']) > 0 and bug_data['bugs'][0]['product'] == "5G-EVE_PORTAL":
+            return True
+        else:
+            return False
