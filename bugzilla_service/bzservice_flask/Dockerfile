@@ -16,7 +16,7 @@ RUN mkdir bzservice_flask
 
 ADD ./app /bzservice_flask/app
 ADD ./bugzilla_app.py /bzservice_flask
-ADD ./keycloak.json /bzservice_flask/app/keycloak
+#ADD ./keycloak.json /bzservice_flask/app/keycloak
 
 WORKDIR /bzservice_flask
 

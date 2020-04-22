@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from .config import configure
+from .config import configure, generate_config_files
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -16,6 +16,8 @@ ma = Marshmallow()
 bcrypt = Bcrypt()
 oidc = OpenIDConnect()
 
+# Generate configuration files
+generate_config_files()
 # Keycloak adapter
 kc_client = Keycloak()
 # Bugzilla adapter
