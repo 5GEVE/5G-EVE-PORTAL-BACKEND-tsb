@@ -98,5 +98,5 @@ class BugzillaClient:
     def get_bug_comments(self, requester_token, bug_id, is_admin):
         return self.bug_comments.get_comments(requester_token, bug_id, is_admin)
 
-    def create_bug_comment(self, user_token, bug_id, comment_data):
-        return self.bug_comments.create_comment(user_token, bug_id, comment_data)
+    def create_bug_comment(self, user_token, bug_id, comment_data, is_admin):
+        return self.bug_comments.create_comment(user_token, bug_id, comment_data, is_admin)

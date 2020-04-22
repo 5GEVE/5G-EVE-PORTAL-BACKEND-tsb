@@ -8,8 +8,8 @@ class BugzillaBug:
         self.bugzilla_data = bugzilla_data
 
     """ Method to get a specific bug. The requested bug is only provided if:
-            - requester has admin role
-            - requester is the owner of the bug
+            - requester has admin role, we wil reply with all the tickets
+            - requester is not admin but is requesting 5G-EVE_PORTAL tickets (which are public)
             @params:
                 - requester: email address of the user who is requesting data
                 - bug_id: bug identifier
@@ -29,16 +29,17 @@ class BugzillaBug:
             if is_admin:
                 return response.status_code, data
             if len(data['bugs']) > 0:
-                if data['bugs'][0]['creator'] == requester:
+                
+                if data['bugs'][0]['product'] == "5G-EVE_PORTAL":
                     return response.status_code, data
                 else:
-                    return requests.codes.unauthorized, json.loads('{"details": "User unauthorized"}')
+                    return requests.codes.unauthorized, json.loads('{"details": "User unauthorized for retrieving ticket"}')
             else:
                 return requests.status_codes, json.loads(json.dumps([]))
 
         return response.status_code, response.json()
 
-    """ Method to collect all bugs created in bugzilla
+    """ Method to collect bugs from bugzilla (all for admin and 5G-EVE_PORTAL related for regular users)
             @params:
                 - requester: email address of the user requesting bugs
             @return:
@@ -52,7 +53,8 @@ class BugzillaBug:
         if is_admin:
             url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key'] + "&status=CONFIRMED"
         else:    
-            url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token + "&status=CONFIRMED"
+            #url = self.bugzilla_data['bugs_uri'] + "?reporter=" + requester + "&token=" + requester_token + "&status=CONFIRMED"
+            url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key'] + "&status=CONFIRMED&product=5G-EVE_PORTAL"
 
         response = requests.get(url)
 

@@ -12,7 +12,10 @@ bp = Blueprint('bugs', __name__, url_prefix='/portal/tsb/tickets')
 @bp.route('', methods=['GET'])
 @oidc.accept_token(require_token=True)
 def get_bugs():
-    page = int(request.args.get('page'))
+    page = request.args.get('page')
+
+    if page != None:
+        page = int(page)
     
     token = str(request.headers['authorization']).split(" ")[1]
     status_code, msg = kc_client.token_to_user(token)
@@ -21,9 +24,8 @@ def get_bugs():
         user = BugzillaUser.query.filter_by(email=msg['email']).first()
         if user: 
             bugzilla_token = user.apikey
-            #TODO: admin roles
-            msg['roles'] = "ADMIN"
-            if "ADMIN" in msg['roles']:
+            # SiteManager retrieves everything but regular users only 5G-EVE portal related tickets
+            if "SiteManager" in msg['roles']:
                 status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=True, page=page)
             else:
                 status, msg = bz_client.get_bugs(requester_email=msg['email'], requester_token=bugzilla_token, is_admin=False, page=page)
@@ -50,9 +52,8 @@ def get_bug(bug_id):
         user = BugzillaUser.query.filter_by(email=msg['email']).first()
         if user:
             bugzilla_token = user.apikey
-            #TODO: admin roles
-            msg['roles'] = "ADMIN"
-            if "ADMIN" in msg['roles']:
+           
+            if "SiteManager" in msg['roles']:
                 status, msg = bz_client.get_bug(requester_email=msg['email'], requester_token=bugzilla_token, bug_id=bug_id, is_admin=True)
             else:
                 status, msg = bz_client.get_bug(requester_email=msg['email'], requester_token=bugzilla_token, bug_id=bug_id, is_admin=False)
@@ -85,13 +86,13 @@ def create_bug():
             bugzilla_token = user.apikey
 
             #TODO: check user roles that are able to create bugs
-            msg['roles'] = 'USER_ALLOWED'
-            if "USER_ALLOWED" in msg['roles']:
-                status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data)
-                return jsonify({'details': msg}), status
+            #msg['roles'] = 'USER_ALLOWED'
+            #if "USER_ALLOWED" in msg['roles']:
+            status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data)
+            return jsonify({'details': msg}), status
                 
-            else:
-                return jsonify({'details': 'User not allowed to create bugs'}), 401
+            #else:
+            #    return jsonify({'details': 'User not allowed to create bugs'}), 401
         else:
             print("SERVER > [ERROR] user {} not found in the DB but correctly logged in at Keycloak")
             return jsonify({'details': 'Internal server error'}), 500
@@ -112,7 +113,7 @@ def update_bug(bug_id):
     if user:
         bugzilla_token = user.apiKey
         #TODO: Usuario admin tambien tiene que ser admin en Bugzilla
-        if "ADMIN" in user_data['roles']:
+        if "SiteManager" in user_data['roles']:
             status, msg = bz_client.update_bug(reporter_email=user_data['email'] ,reporter_token=bugzilla_token, bug_data=data, bug_id=bug_id, is_admin=True)
         else:
             status, msg = bz_client.update_bug(reporter_email=user_data['email'], reporter_token=bugzilla_token, bug_data=data, bug_id=bug_id, is_admin=False)
@@ -130,10 +131,8 @@ def get_bug_comments(bug_id):
         user = BugzillaUser.query.filter_by(email=msg['email']).first()
         if user:
             bugzilla_token = user.apikey
-            #TODO: admin roles
-            #print(msg['roles'])
-            #msg['roles'] = "ADMIN"
-            if "5geve_admin" in msg['roles']:
+             
+            if "SiteManager" in msg['roles']:
                 status, msg = bz_client.get_bug_comments(requester_token=bugzilla_token, bug_id=bug_id, is_admin=True)
             else:
                 status, msg = bz_client.get_bug_comments(requester_token=bugzilla_token, bug_id=bug_id, is_admin=False)
@@ -164,14 +163,13 @@ def create_bug_comment(bug_id):
         if user:
             bugzilla_token = user.apikey
 
-            #TODO: check user roles that are able to create bugs
-            msg['roles'] = 'USER_ALLOWED'
-            if "USER_ALLOWED" in msg['roles']:
-                status, msg = bz_client.create_bug_comment(user_token=bugzilla_token, bug_id=bug_id, comment_data=data)
-                return jsonify({'details': msg}), status
-                
+            if "SiteManager" in msg['roles']:
+                status, msg = bz_client.create_bug_comment(user_token=bugzilla_token, bug_id=bug_id, comment_data=data, is_admin=True)
             else:
-                return jsonify({'details': 'User not allowed to create bugs'}), 401
+                status, msg = bz_client.create_bug_comment(user_token=bugzilla_token, bug_id=bug_id, comment_data=data, is_admin=False)
+
+            return jsonify({'details': msg}), status
+
         else:
             print("SERVER > [ERROR] user {} not found in the DB but correctly logged in at Keycloak")
             return jsonify({'details': 'Internal server error'}), 500
@@ -188,7 +186,7 @@ def create_bug_trusted():
         return jsonify({"details": "No json provided"}), 400
 
     data = request.get_json()
-
+    
     user = BugzillaUser.query.filter_by(email=data['reporter']).first()
     if user:
         bugzilla_token = user.apikey
