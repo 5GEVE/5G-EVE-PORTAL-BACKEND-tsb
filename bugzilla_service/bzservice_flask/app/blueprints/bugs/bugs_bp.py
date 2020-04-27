@@ -190,12 +190,16 @@ def create_bug_trusted():
     user = BugzillaUser.query.filter_by(email=data['reporter']).first()
     if user:
         bugzilla_token = user.apikey
-        status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data)
+        status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data, reporter=None)
 
         return jsonify({'details': msg}), status
 
+    elif bz_client.trusted_requester(data['reporter']):
+        status, msg = bz_client.create_bug(reporter_token=None, bug_data=data, reporter=data['reporter'])
+
+        return jsonify({'details': msg}), status        
     else:
-        print("SERVER > [ERROR] reporter {} not found", data['reporter'])
+        print("SERVER > [ERROR] reporter {} not found".format(data['reporter']))
         return jsonify({'details': 'User requesting comment creation not found'}), 404
 
 #TODO: filter incomming requests. Only requests from ELM are allowed

@@ -90,9 +90,14 @@ class BugzillaBug:
                     - summary: summary of the bug
                     - description: description
                     - assigned_to: by default it will be the component owner
+                - reporter: email of the admin reporter in case it is a ticket creation from a trusted service
     """
-    def create_bug(self, reporter_token, bug_data):   
-        url = self.bugzilla_data['bugs_uri'] + "?token=" + reporter_token
+    def create_bug(self, reporter_token, bug_data, reporter):
+        if reporter_token != None:
+            url = self.bugzilla_data['bugs_uri'] + "?token=" + reporter_token
+        elif reporter_token == None and reporter != None and reporter == self.bugzilla_data['username']:
+            url = self.bugzilla_data['bugs_uri'] + "?api_key=" + self.bugzilla_data['admin_key']
+
         #TODO: hardcoded values not defaulted at bugzilla
         bug_data['version'] = "unspecified"
         bug_data['op_sys'] = "other"

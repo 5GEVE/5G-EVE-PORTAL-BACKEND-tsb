@@ -16,6 +16,12 @@ class BugzillaClient:
         self.bugs = BugzillaBug(self.bugzilla_data)
         self.bug_comments = BugzillaComment(self.bugzilla_data)
 
+    def trusted_requester(self, requester):
+        if requester == self.bugzilla_data['username']:
+            return True
+        else:
+            return False
+
     """ Method to create new users at bugzilla
             @params:
                 - email
@@ -89,8 +95,8 @@ class BugzillaClient:
     def get_bugs(self, requester_email, requester_token, is_admin, page):
         return self.bugs.get_bugs_by_creator(requester_email, requester_token, is_admin, page)
 
-    def create_bug(self, reporter_token, bug_data):
-        return self.bugs.create_bug(reporter_token, bug_data)
+    def create_bug(self, reporter_token, bug_data, reporter):
+        return self.bugs.create_bug(reporter_token, bug_data, reporter)
 
     def update_bug(self, reporter_email, reporter_token, bug_data, bug_id, is_admin):
         return self.bugs.update_bug(reporter_email, reporter_token, bug_data, bug_id, is_admin)
