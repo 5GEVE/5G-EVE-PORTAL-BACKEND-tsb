@@ -209,7 +209,7 @@ def create_bug_comment_trusted(bug_id):
     user = BugzillaUser.query.filter_by(email=data['reporter']).first()
     if user:
         bugzilla_token = user.apikey
-        status, msg = bz_client.create_bug_comment(user_token=bugzilla_token, bug_id=bug_id, comment_data=data)
+        status, msg = bz_client.create_bug_comment(user_token=bugzilla_token, bug_id=bug_id, comment_data=data, is_admin=True)
         return jsonify({'details': msg}), status
 
     else:
