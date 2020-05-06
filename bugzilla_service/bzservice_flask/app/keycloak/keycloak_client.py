@@ -52,11 +52,7 @@ class Keycloak:
         url = self.client_config['web']['token_introspection_uri']
         response = requests.post(url, data=data)
 
-        if response.status_code != requests.codes.ok:
-            return response.status_code, response.json()
-
-        data = response.json()
-        return data['sub']
+        return response.status_code, response.json()
         
     def is_token_valid(self, token):
         data = {

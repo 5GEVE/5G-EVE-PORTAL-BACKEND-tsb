@@ -110,3 +110,36 @@ def logout():
     else:
         print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
         return jsonify({"details": "Internal server error"}), 500
+
+
+@bp.route('/changepassword', methods=['PUT'])
+def change_password():
+    if not request.is_json:
+        return jsonify({"details": "No json provided"}), 400
+
+    data = request.get_json()
+
+    token = str(request.headers['authorization']).split(" ")[1]
+
+    try:
+        new_password = data['new_password']
+    except KeyError as error:
+        return jsonify({"details": "Parameter {} not provided".format(error)}), 400
+
+    user_email = kc_client.get_user_email(token)
+    
+    user = BugzillaUser.query.filter_by(email=user_email).first()
+
+    if user:
+        status, msg = bz_client.change_password(user_email, new_password)
+
+        if status == requests.codes.ok:
+            user.password = bcrypt.generate_password_hash(new_password)
+            db.session.commit()
+            return jsonify({"details": "Password correctly updated"}), status
+
+        return jsonify({"details": msg}), status
+
+    else:
+        print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
+        return jsonify({"details": "Internal server error"}), 500

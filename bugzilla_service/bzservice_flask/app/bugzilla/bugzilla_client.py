@@ -77,6 +77,17 @@ class BugzillaClient:
             
             return response.status_code, json.loads(json.dumps({'users': admin_users}))
 
+    def change_password(self, user_email, new_password):
+        url = self.bugzilla_data['users_uri'] + "/"+ user_email + "?api_key=" + self.bugzilla_data['admin_key']
+
+        new_user_data = {
+            "password": new_password
+        }
+
+        response = requests.put(url, data=new_user_data)
+
+        return response.status_code, response.json()        
+
     #### PRODUCTS MANAGEMENT ####
     def get_products(self):
         return self.products.get_products()
