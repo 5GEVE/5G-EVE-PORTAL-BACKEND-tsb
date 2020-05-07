@@ -42,8 +42,10 @@ class BugzillaClient:
                 - Details message: if success, it will include an access token that belongs to the authenticated user
     """
     def login(self, user_data):
-        url = self.bugzilla_data['login_uri'] + "?login=" + user_data['email'] + "&password=" + user_data['password']
-        response = requests.get(url)
+        #url = self.bugzilla_data['login_uri'] + "?login=" + user_data['email'] + '&password="{}"'.format(user_data['password'])
+        url = self.bugzilla_data['login_uri']
+        params = {'login': user_data['email'], 'password': user_data['password']}
+        response = requests.get(url, params=params)
         
         if response.status_code != 200:
             return response.status_code, "User not found"
