@@ -88,7 +88,7 @@ def create_bug():
             #TODO: check user roles that are able to create bugs
             #msg['roles'] = 'USER_ALLOWED'
             #if "USER_ALLOWED" in msg['roles']:
-            status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data)
+            status, msg = bz_client.create_bug(reporter_token=bugzilla_token, bug_data=data, reporter=msg['email'])
             return jsonify({'details': msg}), status
                 
             #else:
