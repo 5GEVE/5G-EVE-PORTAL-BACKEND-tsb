@@ -18,8 +18,9 @@ class BugzillaComponent:
             if len(data['products']) > 0:
                 components = []
                 for component in data['products'][0]['components']:
-                    component = {'id': component['id'], 'name': component['name'], 'description': component['description']}
-                    components.append(component)
+                    if component['name'] != "REGISTRATION":
+                        component = {'id': component['id'], 'name': component['name'], 'description': component['description']}
+                        components.append(component)
                 return response.status_code, json.loads(json.dumps(components))
             else:
                 return response.status_code, json.loads(json.dumps([]))

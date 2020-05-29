@@ -100,18 +100,20 @@ def create_bug():
 @bp.route('/<bug_id>', methods=['POST'])
 @oidc.accept_token(require_token=True)
 def update_bug(bug_id):
+    print("PASO")
     if not request.is_json:
         return jsonify({"details": "No json provided"}), 400
 
     data = request.get_json()
+    print(data)
 
     token = str(request.headers['authorization']).split(" ")[1]
-    user_data = kc_client.token_to_user(token)
-
+    status, user_data = kc_client.token_to_user(token)
+    print(user_data)
     user = BugzillaUser.query.filter_by(email=user_data['email']).first()
     
     if user:
-        bugzilla_token = user.apiKey
+        bugzilla_token = user.apikey
         #TODO: Usuario admin tambien tiene que ser admin en Bugzilla
         if "SiteManager" in user_data['roles']:
             status, msg = bz_client.update_bug(reporter_email=user_data['email'] ,reporter_token=bugzilla_token, bug_data=data, bug_id=bug_id, is_admin=True)

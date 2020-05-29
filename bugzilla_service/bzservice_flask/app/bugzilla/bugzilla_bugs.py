@@ -60,6 +60,14 @@ class BugzillaBug:
 
         if response.status_code == 200:
             sorted_bugs = sorted(response.json()['bugs'], key=lambda k: datetime.strptime(k['creation_time'],'%Y-%m-%dT%H:%M:%SZ'), reverse=True)
+            if not is_admin:
+                non_admin_bugs = []
+                for b in sorted_bugs:
+                    if b['component'] == "VNF_UPLOADS" and b['creator_detail']['email'] == requester:
+                        non_admin_bugs.append(b)
+                    elif b['component'] not in ["REGISTRATION", "VNF_UPLOADS"]:
+                        non_admin_bugs.append(b)
+                sorted_bugs = non_admin_bugs
 
             if int(page) > np.ceil(len(sorted_bugs)/10):
                 return 404, "Tickets page not found"
@@ -78,7 +86,7 @@ class BugzillaBug:
             data['numTickets'] = len(bugs)
             return response.status_code, data
 
-        return response.status_code, response.json()
+        return response.status_code, response.content
 
     """ Method to create a bug
             @params: 

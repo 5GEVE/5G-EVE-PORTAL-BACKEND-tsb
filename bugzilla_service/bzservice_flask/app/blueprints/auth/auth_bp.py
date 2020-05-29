@@ -54,14 +54,13 @@ def login():
     data = request.get_json()
     if 'email' not in data.keys() or 'password' not in data.keys():
         return jsonify({"details": "Email or password not provided"}), 400
-        
+
     status, msg = bz_client.login(data)
     
     if status == requests.codes.ok:
         user = BugzillaUser.query.filter_by(email=data['email']).first()
         if user:
-            # Request user details and store bugzilla user id
-            #TODO: lo ideal es guardar el user_id de keycloak cuando se registre
+            #TODO: Request user details and store bugzilla user id
             #token_to_user_status, token_to_user_msg = kc_client.token_to_user(msg['token'])
             #if token_to_user_status == requests.codes.ok:
                 #user.bz_user_id = token_to_user_msg['id']
@@ -89,7 +88,6 @@ def login():
     
     return jsonify({"details": msg}), status
 
-#TODO: oidc
 @bp.route('/logout', methods=['GET'])
 def logout():
     token = str(request.headers['authorization']).split(" ")[1]
@@ -111,7 +109,7 @@ def logout():
         print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
         return jsonify({"details": "Internal server error"}), 500
 
-
+'''
 @bp.route('/changepassword', methods=['PUT'])
 def change_password():
     if not request.is_json:
@@ -119,27 +117,43 @@ def change_password():
 
     data = request.get_json()
 
-    token = str(request.headers['authorization']).split(" ")[1]
-
     try:
+        user_email = data['user_email']
         new_password = data['new_password']
     except KeyError as error:
         return jsonify({"details": "Parameter {} not provided".format(error)}), 400
 
-    user_email = kc_client.get_user_email(token)
+    status, msg = bz_client.change_password(user_email, new_password)
     
     user = BugzillaUser.query.filter_by(email=user_email).first()
 
     if user:
-        status, msg = bz_client.change_password(user_email, new_password)
-
         if status == requests.codes.ok:
             user.password = bcrypt.generate_password_hash(new_password)
             db.session.commit()
             return jsonify({"details": "Password correctly updated"}), status
-
-        return jsonify({"details": msg}), status
+        else:
+            return jsonify({"details": msg}), status
 
     else:
-        print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
-        return jsonify({"details": "Internal server error"}), 500
+        data = {"email":user_email, "password": new_password}
+        login_status, login_msg = bz_client.login(data)
+
+        if status == requests.codes.ok:
+            schema = BugzillaUserSchema()
+
+            data['password'] = bcrypt.generate_password_hash(new_password)
+            data['apikey'] = login_msg['token']
+            data['full_name'] = data['email']
+
+            # Store user in local database
+            new_user = schema.load(data)
+            db.session.add(new_user)
+            db.session.commit()
+
+            return jsonify({"details": ""}), 204
+
+        else:
+            print("[AUTH_BP][ERROR] > User correctly logged in at keycloak but not found at local database")
+            return jsonify({"details": "Internal server error"}), 500
+'''
