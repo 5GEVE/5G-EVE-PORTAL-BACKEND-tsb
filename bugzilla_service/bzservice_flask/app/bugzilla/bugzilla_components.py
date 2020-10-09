@@ -18,7 +18,7 @@ class BugzillaComponent:
             if len(data['products']) > 0:
                 components = []
                 for component in data['products'][0]['components']:
-                    if component['name'] != "REGISTRATION":
+                    if component['name'] not in ["REGISTRATION", "AUTHENTICATION"]:
                         component = {'id': component['id'], 'name': component['name'], 'description': component['description']}
                         components.append(component)
                 return response.status_code, json.loads(json.dumps(components))

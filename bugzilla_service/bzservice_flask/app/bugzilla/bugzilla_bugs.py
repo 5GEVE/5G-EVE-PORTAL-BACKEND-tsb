@@ -65,7 +65,7 @@ class BugzillaBug:
                 for b in sorted_bugs:
                     if b['component'] == "VNF_UPLOADS" and b['creator_detail']['email'] == requester:
                         non_admin_bugs.append(b)
-                    elif b['component'] not in ["REGISTRATION", "VNF_UPLOADS"]:
+                    elif b['component'] not in ["REGISTRATION", "VNF_UPLOADS", "AUTHENTICATION"]:
                         non_admin_bugs.append(b)
                 sorted_bugs = non_admin_bugs
 
